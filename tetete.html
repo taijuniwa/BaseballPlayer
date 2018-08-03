@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>niwaのプロリン</title>
+  <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js">
+  </script>
+
+  <script type="text/javascript">
+
+
+  function render(json){
+    $("#result").empty()
+
+    var vars = json.head.vars
+
+    $.each(json.results.bindings, function(i, item){
+      $.each(vars, function(){
+        var str = item[this].value
+        str = str.replace('http://ja.dbpedia.org/resource/','')
+        var data = $("<h2>").text(str)
+        $("#result").append(data)
+      })
+    })
+  }
+
+  function query(){
+    //endpoint, sparql, callback
+    var endpoint = "http://ja.dbpedia.org/sparql"
+    var sparql = "select distinct * where { <http://ja.dbpedia.org/resource/"
+    + document.getElementById('keyword').value +
+    "> <http://dbpedia.org/ontology/"
+    + $("input[name='type']:checked").val() +
+    "> ?o .  } LIMIT 100"
+    var url =endpoint + "?query=" + encodeURIComponent(sparql)
+
+    $.getJSON(url, function(json) { render(json) })
+
+  }
+
+  </script>
+</head>
+
+<body>
+
+<h1>Let's Search Your Favorite Baseball player!!</h1>
+  <h2>※最新の情報ではない可能性があります</h2>
+<div id="search">
+  <form>
+    <p>
+      選手名:<input type="text" id="keyword"><br><br>
+      <input type="radio" name="type" value="club"  checked="checked">現所属チーム
+      <input type="radio" name="type" value="number">背番号
+      <input type="radio" name="type" value="position">ポジション
+      <input type="radio" name="type" value="birthDate">生年月日
+      <input type="radio" name="type" value="birthPlace">出身地
+      <input type="radio" name="type" value="team">チーム経歴
+      <input type="button" value="検索" onclick="query()">
+    </p>
+  </form>
+</div>
+
+<div id=result>
+</div>
+
+</body>
+</html>
